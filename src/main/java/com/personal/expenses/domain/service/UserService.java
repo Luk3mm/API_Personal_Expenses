@@ -1,5 +1,6 @@
 package com.personal.expenses.domain.service;
 
+import com.personal.expenses.domain.exception.ResourceNotFoundException;
 import com.personal.expenses.domain.model.User;
 import com.personal.expenses.domain.repository.UserRepository;
 import com.personal.expenses.dto.user.UserRequestDto;
@@ -41,7 +42,7 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
         Optional<User> optUser = userRepository.findById(id);
 
         if(optUser.isEmpty()){
-
+            throw new ResourceNotFoundException("Nao foi possivel encontrar o usuario com esse id: " + id);
         }
 
         return mapper.map(optUser.get(), UserResponseDto.class);
@@ -49,16 +50,27 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
 
     @Override
     public UserResponseDto register(UserRequestDto dto) {
-        return null;
+        User user = mapper.map(dto, User.class);
+
+        user.setId(null);
+        user = userRepository.save(user);
+        return mapper.map(user, UserResponseDto.class);
     }
 
     @Override
     public UserResponseDto update(Long id, UserRequestDto dto) {
-        return null;
+        getById(id);
+
+        User user = mapper.map(dto, User.class);
+
+        user.setId(id);
+        user = userRepository.save(user);
+        return mapper.map(user, UserResponseDto.class);
     }
 
     @Override
     public void delete(Long id) {
-
+        getById(id);
+        userRepository.deleteById(id);
     }
 }
