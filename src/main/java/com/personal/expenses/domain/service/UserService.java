@@ -1,5 +1,6 @@
 package com.personal.expenses.domain.service;
 
+import com.personal.expenses.domain.exception.ResourceBadRequestException;
 import com.personal.expenses.domain.exception.ResourceNotFoundException;
 import com.personal.expenses.domain.model.User;
 import com.personal.expenses.domain.repository.UserRepository;
@@ -50,6 +51,8 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
 
     @Override
     public UserResponseDto register(UserRequestDto dto) {
+        validateUser(dto);
+
         User user = mapper.map(dto, User.class);
 
         user.setId(null);
@@ -60,6 +63,8 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
     @Override
     public UserResponseDto update(Long id, UserRequestDto dto) {
         getById(id);
+
+        validateUser(dto);
 
         User user = mapper.map(dto, User.class);
 
@@ -72,5 +77,11 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
     public void delete(Long id) {
         getById(id);
         userRepository.deleteById(id);
+    }
+
+    public void validateUser(UserRequestDto dto){
+        if(dto.getEmail() == null || dto.getPassword() == null){
+            throw new ResourceBadRequestException("Email e senha são obrigatorios");
+        }
     }
 }
