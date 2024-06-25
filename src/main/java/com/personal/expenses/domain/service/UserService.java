@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,21 +63,24 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
 
     @Override
     public UserResponseDto update(Long id, UserRequestDto dto) {
-        getById(id);
+        UserResponseDto userDatabase = getById(id);
 
         validateUser(dto);
 
         User user = mapper.map(dto, User.class);
 
         user.setId(id);
+        user.setInactivationDate(userDatabase.getInactivationDate());
         user = userRepository.save(user);
         return mapper.map(user, UserResponseDto.class);
     }
 
     @Override
     public void delete(Long id) {
-        getById(id);
-        userRepository.deleteById(id);
+        UserResponseDto userFind = getById(id);
+        User user = mapper.map(userFind, User.class);
+        user.setInactivationDate(new Date());
+        userRepository.save(user);
     }
 
     public void validateUser(UserRequestDto dto){
