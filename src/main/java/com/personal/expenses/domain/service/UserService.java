@@ -8,13 +8,15 @@ import com.personal.expenses.dto.user.UserRequestDto;
 import com.personal.expenses.dto.user.UserResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Service
 public class UserService implements InterfaceCrudService<UserRequestDto, UserResponseDto> {
     @Autowired
     private UserRepository userRepository;
@@ -54,9 +56,16 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
     public UserResponseDto register(UserRequestDto dto) {
         validateUser(dto);
 
+        Optional<User> optUser = userRepository.findByEmail(dto.getEmail());
+
+        if(optUser.isPresent()){
+            throw new ResourceBadRequestException("Já existe um usuario com esse e-mail: " + dto.getEmail());
+        }
+
         User user = mapper.map(dto, User.class);
 
         user.setId(null);
+        user.setRegisterDate(new Date());
         user = userRepository.save(user);
         return mapper.map(user, UserResponseDto.class);
     }
@@ -71,14 +80,21 @@ public class UserService implements InterfaceCrudService<UserRequestDto, UserRes
 
         user.setId(id);
         user.setInactivationDate(userDatabase.getInactivationDate());
+        user.setRegisterDate(userDatabase.getRegisterDate());
         user = userRepository.save(user);
         return mapper.map(user, UserResponseDto.class);
     }
 
     @Override
     public void delete(Long id) {
-        UserResponseDto userFind = getById(id);
-        User user = mapper.map(userFind, User.class);
+        Optional<User> optUser = userRepository.findById(id);
+
+        if(optUser.isEmpty()){
+            throw new ResourceNotFoundException("Nao foi possivel encontrar o usuario com esse id: " + id);
+        }
+
+        User user = optUser.get();
+
         user.setInactivationDate(new Date());
         userRepository.save(user);
     }

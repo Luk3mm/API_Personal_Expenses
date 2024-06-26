@@ -18,8 +18,9 @@ public class Title {
     @JoinColumn(name = "userId")
     private User user;
     private TypeTitle type;
-    @ManyToMany
-    private List<CostCenter> costCenters;
+    @ManyToOne
+    @JoinColumn(name = "costCenterId")
+    private CostCenter costCenters;
     @Column(nullable = false)
     private double valor;
     private Date registerDate;
@@ -61,11 +62,11 @@ public class Title {
         this.type = type;
     }
 
-    public List<CostCenter> getCostCenters() {
+    public CostCenter getCostCenters() {
         return costCenters;
     }
 
-    public void setCostCenters(List<CostCenter> costCenters) {
+    public void setCostCenters(CostCenter costCenters) {
         this.costCenters = costCenters;
     }
 

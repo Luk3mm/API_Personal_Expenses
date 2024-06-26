@@ -19,7 +19,7 @@ public class CostCenter {
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
-    @ManyToMany(mappedBy = "cost_center")
+    @ManyToMany
     @JsonBackReference
     private List<Title> titles;
 
@@ -55,11 +55,11 @@ public class CostCenter {
         this.user = user;
     }
 
-    public List<Title> getTitles() {
+   public List<Title> getTitles() {
         return titles;
     }
 
     public void setTitles(List<Title> titles) {
-        this.titles = titles;
+       this.titles = titles;
     }
 }

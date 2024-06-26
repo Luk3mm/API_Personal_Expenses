@@ -7,6 +7,7 @@ public class UserResponseDto {
     private String name;
     private String email;
     private String photo;
+    private Date registerDate;
     private Date inactivationDate;
 
     public Long getId() {
@@ -39,6 +40,14 @@ public class UserResponseDto {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
     }
 
     public Date getInactivationDate() {
